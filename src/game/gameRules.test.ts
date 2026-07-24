@@ -9,7 +9,7 @@ import {
 import {
   resolveMechanismAnswer,
   resolveQuestionLimit,
-} from "./verdictRules";
+} from "./hangmanRules";
 
 describe("question data", () => {
   it("contains 99 complete questions per difficulty for every character", () => {

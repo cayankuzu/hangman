@@ -23,7 +23,7 @@ export function AvatarLab() {
   const [characterId, setCharacterId] = useState<CharacterId>("einstein");
   const [preview, setPreview] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
-  const storageKey = `final-verdict-avatar-${characterId}`;
+  const storageKey = `hangman-avatar-${characterId}`;
   const stored = useMemo(() => {
     const value = localStorage.getItem(storageKey);
     return value ? (JSON.parse(value) as AvatarTransform) : avatarTransforms[characterId];
@@ -35,7 +35,7 @@ export function AvatarLab() {
     setCharacterId(id);
     setPreview(null);
     setSaved(false);
-    const savedValue = localStorage.getItem(`final-verdict-avatar-${id}`);
+    const savedValue = localStorage.getItem(`hangman-avatar-${id}`);
     setTransform(
       savedValue
         ? (JSON.parse(savedValue) as AvatarTransform)

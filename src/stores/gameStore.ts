@@ -5,7 +5,7 @@ import { selectFreshQuestionCycle } from "../game/questionSelector";
 import {
   resolveMechanismAnswer,
   resolveQuestionLimit,
-} from "../game/verdictRules";
+} from "../game/hangmanRules";
 import type {
   CharacterId,
   CharacterQuestion,
@@ -21,11 +21,11 @@ import { playTone } from "../utils/sound";
 const savedLanguage =
   typeof window === "undefined"
     ? "tr"
-    : (localStorage.getItem("final-verdict-language") as Language | null) ?? "tr";
+    : (localStorage.getItem("hangman-language") as Language | null) ?? "tr";
 const savedSoundEnabled =
   typeof window === "undefined"
     ? true
-    : localStorage.getItem("final-verdict-sound") !== "false";
+    : localStorage.getItem("hangman-sound") !== "false";
 
 interface GameState {
   screen: Screen;
@@ -70,13 +70,13 @@ export const useGameStore = create<GameState>((set, get) => ({
 
   setScreen: (screen) => set({ screen }),
   setLanguage: (language) => {
-    localStorage.setItem("final-verdict-language", language);
+    localStorage.setItem("hangman-language", language);
     set({ language });
   },
   toggleSound: () =>
     set((state) => {
       const soundEnabled = !state.soundEnabled;
-      localStorage.setItem("final-verdict-sound", String(soundEnabled));
+      localStorage.setItem("hangman-sound", String(soundEnabled));
       if (soundEnabled) playTone(true, "ui");
       return { soundEnabled };
     }),

@@ -12,7 +12,7 @@ import {
   getRoundCounts,
   getRoundStats,
   QUESTIONS_PER_ROUND,
-} from "./game/verdictRules";
+} from "./game/hangmanRules";
 import { copy } from "./i18n/copy";
 import { useGameStore } from "./stores/gameStore";
 import type { Difficulty, GameMode, Screen } from "./types/game";
@@ -59,7 +59,7 @@ function AppHeader({ onBack }: { onBack?: () => void }) {
         onClick={() => useGameStore.getState().reset()}
         aria-label={copy(language, "mainMenu")}
       >
-        SH
+        H
       </button>
       {onBack ? (
         <button className="backButton" type="button" onClick={onBack}>

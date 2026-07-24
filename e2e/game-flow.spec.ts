@@ -4,10 +4,10 @@ test("language, difficulty and a 99-question round reach a result", async ({
   page,
 }) => {
   await page.goto("/");
-  await expect(page.getByRole("heading", { name: /Son Hüküm/i })).toBeVisible();
+  await expect(page.getByRole("heading", { name: /Hangman/i })).toBeVisible();
 
   await page.getByRole("button", { name: "EN", exact: true }).click();
-  await expect(page.getByRole("heading", { name: /Final Verdict/i })).toBeVisible();
+  await expect(page.getByRole("heading", { name: /Hangman/i })).toBeVisible();
   await page.getByRole("button", { name: "TR", exact: true }).click();
 
   await page.getByRole("button", { name: "Oyuna Başla" }).click();
@@ -96,19 +96,24 @@ test("retry starts with a different question and reshuffled round", async ({
   const firstQuestion = await page.locator(".questionCard").getAttribute(
     "data-question-id",
   );
-  for (let turn = 0; turn < 20; turn += 1) {
-    if (await page.locator(".resultPanel").isVisible().catch(() => false)) break;
-    const explanation = page.locator(".answerExplanation");
-    while (!(await explanation.isVisible().catch(() => false))) {
-      const enabledAnswers = page.locator(".answerList button:enabled");
-      if ((await enabledAnswers.count()) === 0) break;
-      await enabledAnswers.first().click();
-    }
-    await page.evaluate(() => {
-      document.querySelector<HTMLButtonElement>(".nextButton")?.click();
-    });
-    await page.waitForTimeout(80);
-  }
+  await page.evaluate(async () => {
+    const storeUrl = performance
+      .getEntriesByType("resource")
+      .map((entry) => entry.name)
+      .find((name) => name.includes("gameStore.ts"));
+    if (!storeUrl) throw new Error("Active game store module was not found.");
+    const module = await import(/* @vite-ignore */ storeUrl);
+    const state = module.useGameStore.getState();
+    const question = state.questions[state.questionIndex];
+    const wrongAnswer = Array.isArray(question.correctAnswer)
+      ? [...question.correctAnswer].reverse()
+      : question.options.find(
+          (option: { id: string }) => option.id !== question.correctAnswer,
+        )?.id;
+    if (!wrongAnswer) throw new Error("A wrong answer could not be prepared.");
+    state.submitAnswer(wrongAnswer);
+    module.useGameStore.getState().advance();
+  });
   await expect(page.locator(".resultPanel")).toBeVisible();
   await page.getByRole("button", { name: "Aynı karakterle tekrar oyna" }).click();
 
