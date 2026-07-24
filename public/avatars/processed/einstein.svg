@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 640" role="img" aria-label="Albert Einstein placeholder portrait">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#24313d"/><stop offset="1" stop-color="#0b0e12"/></linearGradient>
+    <radialGradient id="skin"><stop stop-color="#d7c4ad"/><stop offset="1" stop-color="#998879"/></radialGradient>
+  </defs>
+  <rect width="512" height="640" rx="80" fill="url(#bg)"/>
+  <path d="M86 612c20-120 72-178 170-178s151 58 170 178" fill="#32383f"/>
+  <ellipse cx="256" cy="287" rx="130" ry="161" fill="url(#skin)"/>
+  <g fill="#e9e9e5">
+    <ellipse cx="144" cy="157" rx="91" ry="86" transform="rotate(-23 144 157)"/>
+    <ellipse cx="368" cy="157" rx="91" ry="86" transform="rotate(23 368 157)"/>
+    <ellipse cx="256" cy="108" rx="108" ry="81"/>
+    <path d="M103 183c-39 64-28 122 9 159l45-29-7-120zM409 183c39 64 28 122-9 159l-45-29 7-120z"/>
+  </g>
+  <g fill="none" stroke="#333" stroke-width="8">
+    <ellipse cx="205" cy="281" rx="47" ry="34"/><ellipse cx="307" cy="281" rx="47" ry="34"/><path d="M252 280h8"/>
+  </g>
+  <circle cx="205" cy="285" r="8" fill="#232323"/><circle cx="307" cy="285" r="8" fill="#232323"/>
+  <path d="M256 292l-18 67 35 4" fill="none" stroke="#725f52" stroke-width="8" stroke-linecap="round"/>
+  <path d="M178 391c52-43 105-43 156 0-28 3-53 18-78 18s-50-15-78-18z" fill="#ece9e3"/>
+  <path d="M211 380c29 19 61 19 90 0" fill="none" stroke="#664d45" stroke-width="7" stroke-linecap="round"/>
+</svg>

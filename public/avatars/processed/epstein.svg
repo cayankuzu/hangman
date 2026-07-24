@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 640" role="img" aria-label="Jeffrey Epstein placeholder portrait">
+  <defs>
+    <linearGradient id="bg" x2="1" y2="1"><stop stop-color="#303740"/><stop offset="1" stop-color="#0d1014"/></linearGradient>
+    <radialGradient id="skin"><stop stop-color="#d0a48c"/><stop offset="1" stop-color="#9a6d5b"/></radialGradient>
+  </defs>
+  <rect width="512" height="640" rx="80" fill="url(#bg)"/>
+  <path d="M65 640c18-130 83-202 191-202s173 72 191 202" fill="#111a25"/>
+  <ellipse cx="256" cy="276" rx="125" ry="155" fill="url(#skin)"/>
+  <path d="M126 242c0-132 59-188 137-188 84 0 137 60 129 169-31-45-81-74-148-69-53 4-88 34-118 88z" fill="#73716d"/>
+  <path d="M142 167c33-69 79-100 145-93 53 6 90 43 105 98-64-42-167-48-250-5z" fill="#8b8984"/>
+  <path d="M171 277c26-18 53-18 78 0M274 277c26-18 53-18 78 0" fill="none" stroke="#513a33" stroke-width="8" stroke-linecap="round"/>
+  <circle cx="211" cy="283" r="8" fill="#75a0b4"/><circle cx="312" cy="283" r="8" fill="#75a0b4"/>
+  <path d="M257 292l-16 66 31 1" fill="none" stroke="#765348" stroke-width="7" stroke-linecap="round"/>
+  <path d="M201 392c34 17 71 17 108 0" fill="none" stroke="#6b3b37" stroke-width="8" stroke-linecap="round"/>
+</svg>

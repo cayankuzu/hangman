@@ -1,0 +1,58 @@
+import type { AvatarTransform, CharacterId } from "../types/game";
+
+export const avatarTransforms: Record<CharacterId, AvatarTransform> = {
+  einstein: {
+    offsetX: 0,
+    offsetY: -2,
+    scale: 1,
+    rotation: 0,
+    neckOffsetX: 0,
+    neckOffsetY: 0,
+    maskScale: 1,
+  },
+  epstein: {
+    offsetX: 0,
+    offsetY: 1,
+    scale: 1.03,
+    rotation: 0,
+    neckOffsetX: 0,
+    neckOffsetY: 0,
+    maskScale: 1,
+  },
+  hawking: {
+    offsetX: 0,
+    offsetY: 2,
+    scale: 1.02,
+    rotation: 0,
+    neckOffsetX: 0,
+    neckOffsetY: 1,
+    maskScale: 1,
+  },
+  "sheikh-said": {
+    offsetX: 0,
+    offsetY: -1,
+    scale: 1.02,
+    rotation: 0,
+    neckOffsetX: 0,
+    neckOffsetY: 0,
+    maskScale: 1,
+  },
+  cartman: {
+    offsetX: 0,
+    offsetY: 0,
+    scale: 0.96,
+    rotation: 0,
+    neckOffsetX: 0,
+    neckOffsetY: 0,
+    maskScale: 1.08,
+  },
+  hitler: {
+    offsetX: 0,
+    offsetY: 0,
+    scale: 1,
+    rotation: 0,
+    neckOffsetX: 0,
+    neckOffsetY: 0,
+    maskScale: 1,
+  },
+};

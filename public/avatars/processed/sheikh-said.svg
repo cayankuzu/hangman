@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 640" role="img" aria-label="Sheikh Said placeholder portrait">
+  <defs>
+    <linearGradient id="bg" x2="1" y2="1"><stop stop-color="#4a3b25"/><stop offset="1" stop-color="#11100d"/></linearGradient>
+    <radialGradient id="skin"><stop stop-color="#c5ab86"/><stop offset="1" stop-color="#7f664c"/></radialGradient>
+  </defs>
+  <rect width="512" height="640" rx="80" fill="url(#bg)"/>
+  <path d="M58 640c26-136 86-200 198-200 110 0 174 66 198 200" fill="#ded7c4"/>
+  <ellipse cx="256" cy="278" rx="112" ry="147" fill="url(#skin)"/>
+  <path d="M104 197c0-91 66-158 152-158s152 67 152 158c-54-28-255-28-304 0z" fill="#f0ede2"/>
+  <path d="M111 188c48-29 241-31 293 0" fill="none" stroke="#d5cdb8" stroke-width="18" stroke-linecap="round"/>
+  <path d="M167 275c23-16 47-16 70 0M275 275c23-16 47-16 70 0" fill="none" stroke="#43362c" stroke-width="8" stroke-linecap="round"/>
+  <circle cx="204" cy="282" r="7" fill="#211e1b"/><circle cx="307" cy="282" r="7" fill="#211e1b"/>
+  <path d="M256 293l-15 66 30 2" fill="none" stroke="#604b3d" stroke-width="7" stroke-linecap="round"/>
+  <path d="M150 379c50-25 82-16 106 4 26-20 60-29 108-4-10 102-49 169-108 169s-98-67-106-169z" fill="#efede4"/>
+  <path d="M210 392c31 15 61 15 92 0" fill="none" stroke="#57443b" stroke-width="7" stroke-linecap="round"/>
+</svg>

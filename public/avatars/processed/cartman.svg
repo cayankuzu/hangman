@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 640" role="img" aria-label="Original round parody avatar placeholder">
+  <defs>
+    <linearGradient id="bg" x2="1" y2="1"><stop stop-color="#123d45"/><stop offset="1" stop-color="#071114"/></linearGradient>
+  </defs>
+  <rect width="512" height="640" rx="80" fill="url(#bg)"/>
+  <ellipse cx="256" cy="350" rx="193" ry="181" fill="#e9bc87"/>
+  <path d="M72 289c18-137 88-211 184-211s166 74 184 211c-103-41-266-41-368 0z" fill="#1595a3"/>
+  <path d="M75 281c92-37 271-37 362 0" fill="none" stroke="#f2d842" stroke-width="22"/>
+  <path d="M197 85c21-37 96-37 118 0l-18 36h-82z" fill="#f2d842"/>
+  <ellipse cx="204" cy="344" rx="55" ry="70" fill="#f7f5ee"/>
+  <ellipse cx="308" cy="344" rx="55" ry="70" fill="#f7f5ee"/>
+  <circle cx="222" cy="356" r="9" fill="#202022"/><circle cx="290" cy="356" r="9" fill="#202022"/>
+  <path d="M213 449c28 18 58 18 87 0" fill="none" stroke="#3d2623" stroke-width="12" stroke-linecap="round"/>
+  <path d="M93 579c54-78 272-78 326 0" fill="#b82732"/>
+  <circle cx="143" cy="541" r="30" fill="#f1d444"/><circle cx="369" cy="541" r="30" fill="#f1d444"/>
+</svg>
