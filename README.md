@@ -3,6 +3,8 @@
 Hangman combines sourced knowledge questions with a cinematic 3D hangman stage.
 The bilingual web game offers three distinct modes:
 
+**Live game:** [hangman.vercel.app](https://hangman.vercel.app)
+
 - **Classic:** Complete the answer by selecting letters and numbers.
 - **Execute:** Build the execution mechanism step by step with correct answers.
 - **Rescue:** Untie the character with each correct answer.

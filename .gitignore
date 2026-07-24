@@ -7,7 +7,6 @@ coverage/
 *.tsbuildinfo
 vite.config.js
 vite.config.d.ts
-final-verdict-*.png
 hangman-*.png
 .DS_Store
 
