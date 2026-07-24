@@ -10,6 +10,7 @@ import {
   resolveMechanismAnswer,
   resolveQuestionLimit,
 } from "./hangmanRules";
+import { parseSourceNote } from "../utils/sourceLink";
 
 describe("question data", () => {
   it("contains 99 complete questions per difficulty for every character", () => {
@@ -35,6 +36,12 @@ describe("question data", () => {
         expect(question.question.en.length).toBeGreaterThan(4);
         expect(question.question.tr).not.toContain(":");
         expect(question.question.en).not.toContain(":");
+        expect(question.question.tr).not.toMatch(
+          /rahatsızlık doğru cevabı|iki tarafı rahatsız/i,
+        );
+        expect(question.question.en).not.toMatch(
+          /discomfort does not|both admirers/i,
+        );
         expect(question.explanation.tr.length).toBeGreaterThan(4);
         expect(question.explanation.en.length).toBeGreaterThan(4);
         expect(question.options.length).toBeGreaterThanOrEqual(2);
@@ -46,6 +53,16 @@ describe("question data", () => {
           ),
         ).toBe(true);
         expect(question.sourceNote).toMatch(/^.+https?:\/\//);
+      }
+    }
+  });
+
+  it("parses every citation into a clickable web source", () => {
+    for (const pool of Object.values(questionsByCharacter)) {
+      for (const question of pool) {
+        const source = parseSourceNote(question.sourceNote);
+        expect(source.label.length).toBeGreaterThan(0);
+        expect(source.url).toMatch(/^https?:\/\//);
       }
     }
   });

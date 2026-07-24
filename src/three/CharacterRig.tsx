@@ -35,9 +35,11 @@ interface BodyProfile {
   trousers: string;
   skin: string;
   build: "standing" | "seated" | "robe" | "round";
-  eyeSpacing: number;
-  eyeY: number;
-  eyeScale: number;
+  headDepth: number;
+  eyes: readonly [
+    { x: number; y: number; scale: number },
+    { x: number; y: number; scale: number },
+  ];
 }
 
 const bodyProfiles: Record<CharacterId, BodyProfile> = {
@@ -55,9 +57,11 @@ const bodyProfiles: Record<CharacterId, BodyProfile> = {
     trousers: "#232629",
     skin: "#bca58c",
     build: "standing",
-    eyeSpacing: 0.22,
-    eyeY: 0.1,
-    eyeScale: 0.9,
+    headDepth: 0.39,
+    eyes: [
+      { x: -0.095, y: 0.15, scale: 0.78 },
+      { x: 0.195, y: 0.15, scale: 0.78 },
+    ],
   },
   epstein: {
     height: 1.04,
@@ -73,9 +77,11 @@ const bodyProfiles: Record<CharacterId, BodyProfile> = {
     trousers: "#161a20",
     skin: "#c29c7c",
     build: "standing",
-    eyeSpacing: 0.19,
-    eyeY: 0.12,
-    eyeScale: 0.88,
+    headDepth: 0.36,
+    eyes: [
+      { x: -0.21, y: 0.265, scale: 0.72 },
+      { x: 0.095, y: 0.265, scale: 0.72 },
+    ],
   },
   hawking: {
     height: 0.93,
@@ -93,9 +99,11 @@ const bodyProfiles: Record<CharacterId, BodyProfile> = {
     trousers: "#20242a",
     skin: "#c5a98e",
     build: "seated",
-    eyeSpacing: 0.17,
-    eyeY: 0.13,
-    eyeScale: 0.78,
+    headDepth: 0.34,
+    eyes: [
+      { x: -0.07, y: 0.245, scale: 0.67 },
+      { x: 0.2, y: 0.345, scale: 0.67 },
+    ],
   },
   "sheikh-said": {
     height: 1,
@@ -111,9 +119,11 @@ const bodyProfiles: Record<CharacterId, BodyProfile> = {
     trousers: "#28251f",
     skin: "#a98f73",
     build: "robe",
-    eyeSpacing: 0.18,
-    eyeY: 0.13,
-    eyeScale: 0.82,
+    headDepth: 0.36,
+    eyes: [
+      { x: -0.14, y: 0.285, scale: 0.7 },
+      { x: 0.11, y: 0.285, scale: 0.7 },
+    ],
   },
   cartman: {
     height: 0.76,
@@ -129,9 +139,11 @@ const bodyProfiles: Record<CharacterId, BodyProfile> = {
     trousers: "#6e4b2f",
     skin: "#f1c99d",
     build: "round",
-    eyeSpacing: 0.25,
-    eyeY: 0.14,
-    eyeScale: 1.08,
+    headDepth: 0.48,
+    eyes: [
+      { x: -0.115, y: 0, scale: 0.72 },
+      { x: 0.155, y: 0, scale: 0.72 },
+    ],
   },
   hitler: {
     height: 1.02,
@@ -147,9 +159,11 @@ const bodyProfiles: Record<CharacterId, BodyProfile> = {
     trousers: "#242827",
     skin: "#b99b82",
     build: "standing",
-    eyeSpacing: 0.18,
-    eyeY: 0.11,
-    eyeScale: 0.84,
+    headDepth: 0.35,
+    eyes: [
+      { x: -0.13, y: 0.12, scale: 0.7 },
+      { x: 0.205, y: 0.15, scale: 0.7 },
+    ],
   },
 };
 
@@ -331,61 +345,209 @@ function RevealGroup({
   );
 }
 
+function WheelchairWheel({ x }: { x: number }) {
+  return (
+    <group
+      position={[x, -0.58, -0.12]}
+      rotation={[0, Math.PI / 2, 0]}
+    >
+      <mesh castShadow>
+        <torusGeometry args={[0.6, 0.075, 20, 64]} />
+        <meshPhysicalMaterial
+          color="#11161b"
+          roughness={0.68}
+          clearcoat={0.12}
+        />
+      </mesh>
+      <mesh position={[0, 0, 0.035]}>
+        <torusGeometry args={[0.52, 0.026, 14, 64]} />
+        <meshStandardMaterial
+          color="#a9b4bc"
+          metalness={0.94}
+          roughness={0.15}
+        />
+      </mesh>
+      <mesh position={[0, 0, 0.095]}>
+        <torusGeometry args={[0.47, 0.018, 12, 64]} />
+        <meshStandardMaterial
+          color="#d1d8dc"
+          metalness={0.96}
+          roughness={0.1}
+        />
+      </mesh>
+      {Array.from({ length: 12 }, (_, index) => (
+        <mesh
+          key={index}
+          position={[0, 0, 0.045]}
+          rotation={[0, 0, (Math.PI * index) / 6]}
+        >
+          <boxGeometry args={[0.012, 1.01, 0.012]} />
+          <meshStandardMaterial
+            color="#77838b"
+            metalness={0.9}
+            roughness={0.2}
+          />
+        </mesh>
+      ))}
+      <mesh position={[0, 0, 0.075]} rotation={[Math.PI / 2, 0, 0]}>
+        <cylinderGeometry args={[0.105, 0.105, 0.14, 24]} />
+        <meshStandardMaterial
+          color="#bec6cb"
+          metalness={0.94}
+          roughness={0.12}
+        />
+      </mesh>
+    </group>
+  );
+}
+
 function Wheelchair() {
   return (
-    <group position={[0, -0.5, -0.02]}>
-      <RoundedBox args={[1.35, 0.18, 1.04]} radius={0.08} position={[0, -0.28, -0.05]} castShadow>
-        <meshPhysicalMaterial color="#303741" metalness={0.58} roughness={0.32} />
+    <group position={[0, -0.48, -0.03]}>
+      <RoundedBox
+        args={[1.42, 0.22, 1.12]}
+        radius={0.09}
+        position={[0, -0.23, -0.02]}
+        castShadow
+      >
+        <meshPhysicalMaterial
+          color="#252d35"
+          roughness={0.35}
+          metalness={0.4}
+          clearcoat={0.18}
+        />
       </RoundedBox>
-      <RoundedBox args={[1.22, 1.34, 0.22]} radius={0.08} position={[0, 0.5, -0.42]} castShadow>
-        <meshPhysicalMaterial color="#242b34" roughness={0.43} clearcoat={0.1} />
+      <RoundedBox
+        args={[1.26, 1.42, 0.24]}
+        radius={0.09}
+        position={[0, 0.56, -0.47]}
+        rotation={[-0.1, 0, 0]}
+        castShadow
+      >
+        <meshPhysicalMaterial
+          color="#1e252c"
+          roughness={0.48}
+          clearcoat={0.08}
+        />
       </RoundedBox>
-      {[-0.78, 0.78].map((x) => (
-        <group key={x} position={[x, -0.58, -0.12]}>
-          <mesh castShadow>
-            <torusGeometry args={[0.56, 0.075, 18, 48]} />
-            <meshPhysicalMaterial color="#6f7983" metalness={0.86} roughness={0.2} />
+      <RoundedBox
+        args={[1.1, 0.18, 0.36]}
+        radius={0.07}
+        position={[0, 1.28, -0.47]}
+        castShadow
+      >
+        <meshPhysicalMaterial color="#272f37" roughness={0.45} />
+      </RoundedBox>
+
+      <WheelchairWheel x={-0.81} />
+      <WheelchairWheel x={0.81} />
+
+      {[-0.58, 0.58].map((x) => (
+        <group key={`caster-${x}`} position={[x, -1.12, 0.53]}>
+          <mesh rotation={[0, Math.PI / 2, 0]} castShadow>
+            <torusGeometry args={[0.17, 0.045, 14, 32]} />
+            <meshStandardMaterial
+              color="#171c20"
+              roughness={0.62}
+              metalness={0.32}
+            />
           </mesh>
-          <mesh rotation={[Math.PI / 2, 0, 0]}>
-            <cylinderGeometry args={[0.105, 0.105, 0.09, 20]} />
-            <meshStandardMaterial color="#a2a9af" metalness={0.9} roughness={0.18} />
+          <mesh
+            position={[x > 0 ? -0.12 : 0.12, 0.22, -0.04]}
+            rotation={[0, 0, x > 0 ? -0.36 : 0.36]}
+          >
+            <boxGeometry args={[0.055, 0.58, 0.055]} />
+            <meshStandardMaterial
+              color="#8d989f"
+              metalness={0.9}
+              roughness={0.18}
+            />
           </mesh>
-          {[0, Math.PI / 4, Math.PI / 2, (Math.PI * 3) / 4].map((rotation) => (
-            <mesh key={rotation} rotation={[0, 0, rotation]}>
-              <boxGeometry args={[0.035, 1.02, 0.035]} />
-              <meshStandardMaterial color="#555f68" metalness={0.82} roughness={0.26} />
-            </mesh>
-          ))}
         </group>
       ))}
-      {[-0.56, 0.56].map((x) => (
-        <group key={x} position={[x, -1.05, 0.5]}>
-          <mesh>
-            <torusGeometry args={[0.16, 0.04, 12, 28]} />
-            <meshStandardMaterial color="#565f67" metalness={0.8} roughness={0.25} />
+
+      {[-0.7, 0.7].map((x) => (
+        <group key={`frame-${x}`}>
+          <mesh
+            position={[x, -0.22, 0.12]}
+            rotation={[0.58, 0, 0]}
+            castShadow
+          >
+            <cylinderGeometry args={[0.035, 0.035, 1.55, 16]} />
+            <meshStandardMaterial
+              color="#a2adb4"
+              metalness={0.92}
+              roughness={0.18}
+            />
           </mesh>
-          <mesh position={[x > 0 ? -0.12 : 0.12, 0.22, -0.03]} rotation={[0, 0, x > 0 ? -0.32 : 0.32]}>
-            <boxGeometry args={[0.04, 0.55, 0.04]} />
-            <meshStandardMaterial color="#68727a" metalness={0.82} roughness={0.22} />
-          </mesh>
+          <RoundedBox
+            args={[0.14, 0.1, 0.83]}
+            radius={0.04}
+            position={[x, 0.18, 0.1]}
+            castShadow
+          >
+            <meshPhysicalMaterial
+              color="#20272d"
+              roughness={0.42}
+              clearcoat={0.1}
+            />
+          </RoundedBox>
         </group>
       ))}
-      <RoundedBox args={[1.05, 0.1, 0.34]} radius={0.04} position={[0, -1.03, 0.64]}>
-        <meshPhysicalMaterial color="#252c33" metalness={0.55} roughness={0.34} />
+
+      <RoundedBox
+        args={[1.12, 0.1, 0.4]}
+        radius={0.04}
+        position={[0, -1.1, 0.67]}
+        castShadow
+      >
+        <meshPhysicalMaterial
+          color="#252d34"
+          metalness={0.48}
+          roughness={0.36}
+        />
       </RoundedBox>
-      <mesh position={[0.75, 0.38, 0.42]}>
-        <boxGeometry args={[0.17, 0.09, 0.22]} />
-        <meshStandardMaterial color="#8fb8d9" emissive="#31587a" emissiveIntensity={1.2} />
+      <RoundedBox
+        args={[0.62, 0.35, 0.5]}
+        radius={0.06}
+        position={[0, -0.65, -0.55]}
+        castShadow
+      >
+        <meshPhysicalMaterial
+          color="#11171c"
+          metalness={0.38}
+          roughness={0.5}
+        />
+      </RoundedBox>
+      <mesh position={[0.76, 0.35, 0.42]} castShadow>
+        <boxGeometry args={[0.2, 0.1, 0.26]} />
+        <meshStandardMaterial
+          color="#a9c7dc"
+          emissive="#315b78"
+          emissiveIntensity={1.25}
+        />
       </mesh>
-      {[-0.68, 0.68].map((x) => (
-        <group key={`handle-${x}`} position={[x, 1.1, -0.48]}>
+      <mesh position={[0.76, 0.45, 0.4]}>
+        <sphereGeometry args={[0.045, 14, 10]} />
+        <meshStandardMaterial color="#d5b36d" emissive="#9a6e25" emissiveIntensity={1.4} />
+      </mesh>
+
+      {[-0.67, 0.67].map((x) => (
+        <group key={`handle-${x}`} position={[x, 1.16, -0.5]}>
           <mesh rotation={[Math.PI / 2, 0, 0]}>
-            <cylinderGeometry args={[0.035, 0.035, 0.34, 12]} />
-            <meshStandardMaterial color="#707a82" metalness={0.82} roughness={0.24} />
+            <cylinderGeometry args={[0.035, 0.035, 0.38, 14]} />
+            <meshStandardMaterial
+              color="#8e999f"
+              metalness={0.9}
+              roughness={0.2}
+            />
           </mesh>
-          <mesh position={[0, 0.17, -0.12]} rotation={[Math.PI / 2, 0, 0]}>
-            <cylinderGeometry args={[0.045, 0.045, 0.28, 12]} />
-            <meshStandardMaterial color="#242a31" roughness={0.6} />
+          <mesh
+            position={[0, 0.17, -0.13]}
+            rotation={[Math.PI / 2, 0, 0]}
+          >
+            <cylinderGeometry args={[0.05, 0.05, 0.3, 14]} />
+            <meshStandardMaterial color="#1c2228" roughness={0.64} />
           </mesh>
         </group>
       ))}
@@ -639,6 +801,41 @@ export function CharacterRig({
           position={[profile.headX ?? 0, profile.headY, 0.51]}
           rotation={[0, 0, profile.headRotation ?? 0]}
         >
+          <mesh
+            position={[
+              0,
+              -0.035,
+              -(profile.headDepth + 0.12),
+            ]}
+            scale={[
+              profile.headScale[0] * 0.38,
+              profile.headScale[1] * 0.4,
+              profile.headDepth,
+            ]}
+            castShadow
+          >
+            <sphereGeometry args={[1, 40, 32]} />
+            <meshPhysicalMaterial
+              color={profile.skin}
+              roughness={0.64}
+              clearcoat={0.08}
+              sheen={0.12}
+            />
+          </mesh>
+          <mesh
+            position={[
+              0,
+              -profile.headScale[1] * 0.42,
+              -0.46,
+            ]}
+            castShadow
+          >
+            <cylinderGeometry args={[0.2, 0.25, 0.42, 24]} />
+            <meshPhysicalMaterial
+              color={profile.skin}
+              roughness={0.72}
+            />
+          </mesh>
           <Image
             url={character.sceneAvatar}
             scale={profile.headScale}
@@ -656,16 +853,19 @@ export function CharacterRig({
               opacity={0.28}
               position={[0, 0, 0.01]}
             />
-            {[-profile.eyeSpacing, profile.eyeSpacing].flatMap((x) =>
+            {profile.eyes.flatMap((eye, eyeIndex) =>
               [-Math.PI / 4, Math.PI / 4].map((rotation) => (
                 <mesh
-                  key={`${x}-${rotation}`}
-                  position={[x, profile.eyeY, 0.12]}
+                  key={`${eyeIndex}-${rotation}`}
+                  position={[eye.x, eye.y, 0.12]}
                   rotation={[0, 0, rotation]}
-                  scale={profile.eyeScale}
+                  scale={eye.scale}
                 >
                   <boxGeometry args={[0.052, 0.24, 0.025]} />
-                  <meshBasicMaterial color="#ff2e3e" />
+                  <meshBasicMaterial
+                    color="#ff2638"
+                    toneMapped={false}
+                  />
                 </mesh>
               )),
             )}

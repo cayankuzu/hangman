@@ -10,6 +10,7 @@ import type {
   Language,
 } from "../../types/game";
 import { playFinalSequence, playTone } from "../../utils/sound";
+import { parseSourceNote } from "../../utils/sourceLink";
 
 const SceneCanvas = lazy(() =>
   import("../SceneCanvas/SceneCanvas").then((module) => ({
@@ -190,6 +191,7 @@ export function ClassicHangman({
 
   const stageMode = won ? "rescue" : "execute";
   const stageStep = won || lost ? 6 : wrongCount;
+  const source = parseSourceNote(puzzle.source);
 
   return (
     <section
@@ -275,13 +277,23 @@ export function ClassicHangman({
                   : "Six wrong letters completed the mechanism."}
             </strong>
             <p>{puzzle.answer}</p>
+            {source.url ? (
+              <a
+                className="sourceLink"
+                href={source.url}
+                target="_blank"
+                rel="noreferrer"
+              >
+                <span>{language === "tr" ? "Kaynağı aç" : "Open source"}</span>
+                <b>{source.label}</b>
+                <em aria-hidden="true">↗</em>
+              </a>
+            ) : null}
             <button type="button" onClick={nextPuzzle}>
               {language === "tr" ? "Yeni kelime" : "New word"}
             </button>
           </div>
-        ) : (
-          <small className="classicSource">{puzzle.source}</small>
-        )}
+        ) : null}
       </motion.section>
     </section>
   );

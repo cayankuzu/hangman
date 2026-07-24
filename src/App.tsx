@@ -59,7 +59,7 @@ function AppHeader({ onBack }: { onBack?: () => void }) {
         onClick={() => useGameStore.getState().reset()}
         aria-label={copy(language, "mainMenu")}
       >
-        H
+        {language === "tr" ? "A" : "H"}
       </button>
       {onBack ? (
         <button className="backButton" type="button" onClick={onBack}>
@@ -89,11 +89,7 @@ function MainMenu() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.65 }}
       >
-        <p className="eyebrow">{copy(language, "eyebrow")}</p>
-        <h1>
-          {copy(language, "title")}
-          <span>{copy(language, "subtitle")}</span>
-        </h1>
+        <h1>{copy(language, "title")}</h1>
         <p className="motto">{copy(language, "motto")}</p>
         <p className="intro">{copy(language, "intro")}</p>
         <div className="heroActions">
@@ -601,6 +597,7 @@ export function App() {
 
   useEffect(() => {
     document.documentElement.lang = language;
+    document.title = language === "tr" ? "Asmaca" : "Hangman";
   }, [language]);
 
   useEffect(() => {

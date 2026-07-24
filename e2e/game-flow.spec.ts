@@ -4,7 +4,7 @@ test("language, difficulty and a 99-question round reach a result", async ({
   page,
 }) => {
   await page.goto("/");
-  await expect(page.getByRole("heading", { name: /Hangman/i })).toBeVisible();
+  await expect(page.getByRole("heading", { name: /Asmaca/i })).toBeVisible();
 
   await page.getByRole("button", { name: "EN", exact: true }).click();
   await expect(page.getByRole("heading", { name: /Hangman/i })).toBeVisible();
@@ -225,6 +225,27 @@ test("mode order and the effects-only audio control match the final UX", async (
     "AS",
     "KURTAR",
   ]);
+});
+
+test("answers stay concise and expose a clickable source", async ({ page }) => {
+  await page.goto("/");
+  await expect(page).toHaveTitle("Asmaca");
+  await page.locator(".primaryButton").click();
+  await page.locator(".characterCard").first().click();
+  await page.locator(".mode-execute").click();
+
+  const question = page.locator(".questionCard h2");
+  await expect(question).not.toContainText("Rahatsızlık doğru cevabı");
+  await expect(question).not.toContainText("iki tarafı rahatsız");
+
+  await page.locator(".answerList button").first().click();
+  const answerPanel = page.locator(".answerExplanation");
+  await expect(answerPanel.locator("p")).toHaveCount(0);
+
+  const source = answerPanel.locator("a.sourceLink");
+  await expect(source).toBeVisible();
+  await expect(source).toHaveAttribute("href", /^https?:\/\//);
+  await expect(source).toHaveAttribute("target", "_blank");
 });
 
 test("a failed rescue resolves to the full 3D hanging sequence", async ({

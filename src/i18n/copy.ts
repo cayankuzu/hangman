@@ -2,9 +2,7 @@ import type { Language } from "../types/game";
 
 const translations = {
   tr: {
-    eyebrow: "Sinematik bilgi oyunu",
-    title: "Hangman",
-    subtitle: "Cinematic Knowledge Game",
+    title: "Asmaca",
     motto: "Bilgi kaderi belirler.",
     intro: "Altı karakter. Üç zorluk. Her tur 99 soru. Sahnenin yönünü cevapların belirler.",
     stageSummary: "99 soru · 6 adım · 2 sonuç",
@@ -71,9 +69,7 @@ const translations = {
     resetOrder: "Sıralamayı sıfırla",
   },
   en: {
-    eyebrow: "Cinematic knowledge game",
     title: "Hangman",
-    subtitle: "Cinematic Knowledge Game",
     motto: "Knowledge decides fate.",
     intro: "Six characters. Three difficulties. 99 questions per round. Your answers direct the stage.",
     stageSummary: "99 questions · 6 steps · 2 outcomes",

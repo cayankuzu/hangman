@@ -23,6 +23,48 @@ const neckYByCharacter: Record<CharacterId, number> = {
   hitler: 0.7,
 };
 
+const stagePalettes: Record<
+  CharacterId,
+  { wood: string; rescueWood: string; trapdoor: string; metal: string }
+> = {
+  einstein: {
+    wood: "#273039",
+    rescueWood: "#24343e",
+    trapdoor: "#33414a",
+    metal: "#8da9b8",
+  },
+  epstein: {
+    wood: "#25292d",
+    rescueWood: "#2b3137",
+    trapdoor: "#34383d",
+    metal: "#899199",
+  },
+  hawking: {
+    wood: "#25273b",
+    rescueWood: "#282d45",
+    trapdoor: "#343854",
+    metal: "#9b93c9",
+  },
+  "sheikh-said": {
+    wood: "#4a3523",
+    rescueWood: "#493d2d",
+    trapdoor: "#573a24",
+    metal: "#a88d62",
+  },
+  cartman: {
+    wood: "#24525d",
+    rescueWood: "#28616b",
+    trapdoor: "#2c6870",
+    metal: "#95c7ce",
+  },
+  hitler: {
+    wood: "#322726",
+    rescueWood: "#343031",
+    trapdoor: "#422d2a",
+    metal: "#8e8582",
+  },
+};
+
 function Bolt({ position }: { position: [number, number, number] }) {
   return (
     <mesh position={position} rotation={[Math.PI / 2, 0, 0]}>
@@ -92,6 +134,7 @@ export function Gallows({
   const feedback = useRef(0);
   const finalElapsed = useRef(0);
   const neckY = neckYByCharacter[characterId];
+  const palette = stagePalettes[characterId];
 
   useLayoutEffect(() => {
     ropeLoop.current?.scale.setScalar(mode === "execute" ? 1.02 : 0.92);
@@ -182,7 +225,7 @@ export function Gallows({
     }
   });
 
-  const wood = mode === "execute" ? "#2d2118" : "#24282d";
+  const wood = mode === "execute" ? palette.wood : palette.rescueWood;
   const cordLength = 2.9 - neckY;
   const cordCenter = neckY + cordLength / 2;
 
@@ -213,7 +256,7 @@ export function Gallows({
         <mesh position={[0.545, 0, 0]} castShadow receiveShadow>
           <boxGeometry args={[1.09, 0.18, 2.18]} />
           <meshPhysicalMaterial
-            color="#3b291e"
+            color={palette.trapdoor}
             roughness={0.7}
             clearcoat={0.08}
           />
@@ -223,7 +266,7 @@ export function Gallows({
         <mesh position={[-0.545, 0, 0]} castShadow receiveShadow>
           <boxGeometry args={[1.09, 0.18, 2.18]} />
           <meshPhysicalMaterial
-            color="#3b291e"
+            color={palette.trapdoor}
             roughness={0.7}
             clearcoat={0.08}
           />
@@ -232,7 +275,7 @@ export function Gallows({
       {[-0.94, 0.94].map((x) => (
         <mesh key={x} position={[x, -1.75, 0.82]}>
           <boxGeometry args={[0.05, 0.04, 0.48]} />
-          <meshStandardMaterial color="#677078" metalness={0.92} roughness={0.18} />
+          <meshStandardMaterial color={palette.metal} metalness={0.92} roughness={0.18} />
         </mesh>
       ))}
 
@@ -271,7 +314,7 @@ export function Gallows({
       <group ref={lever} position={[2.58, 1.72, 0.2]}>
         <mesh rotation={[0, 0, -0.28]}>
           <cylinderGeometry args={[0.045, 0.045, 1.02, 14]} />
-          <meshStandardMaterial color="#687179" metalness={0.86} roughness={0.22} />
+          <meshStandardMaterial color={palette.metal} metalness={0.86} roughness={0.22} />
         </mesh>
         <mesh position={[0.15, 0.46, 0]}>
           <sphereGeometry args={[0.12, 18, 14]} />

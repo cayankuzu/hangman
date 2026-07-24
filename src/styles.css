@@ -1221,8 +1221,7 @@ h1 span {
   gap: 6px;
 }
 
-.classicHeading small,
-.classicSource {
+.classicHeading small {
   color: #817d75;
   font-size: 0.58rem;
   letter-spacing: 0.14em;
@@ -1312,13 +1311,6 @@ h1 span {
   background: rgba(145, 48, 57, 0.16);
 }
 
-.classicSource {
-  display: block;
-  margin-top: 24px;
-  line-height: 1.55;
-  text-transform: none;
-}
-
 .classicResult {
   display: grid;
   margin-top: 24px;
@@ -1348,7 +1340,7 @@ h1 span {
   color: #aaa69d;
 }
 
-.classicResult button {
+.classicResult > button {
   min-height: 44px;
   margin-top: 8px;
   border: 1px solid #d5b36d;
@@ -1846,38 +1838,13 @@ h1 span {
   justify-content: space-between;
 }
 
-.questionHeading > div {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 6px;
-}
-
-.questionHeading p,
-.questionHeading span {
+.questionHeading p {
   margin: 0;
   color: #777a80;
   font-size: 0.59rem;
   font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-}
-
-.questionHeading .toneBadge {
-  border-color: rgba(213, 179, 109, 0.28);
-  color: #c9aa6d;
-}
-
-.questionHeading .tone-satire {
-  border-color: rgba(202, 74, 83, 0.36);
-  color: #df747c;
-  background: rgba(142, 35, 45, 0.1);
-}
-
-.questionHeading span {
-  padding: 6px 9px;
-  border: 1px solid #303237;
-  border-radius: 999px;
 }
 
 .questionCard > h2 {
@@ -2030,20 +1997,59 @@ h1 span {
   background: #db5962;
 }
 
-.answerExplanation p {
-  margin: 9px 0 0;
-  color: #b4b1aa;
-  font-size: 0.76rem;
-  line-height: 1.55;
+.sourceLink {
+  display: grid;
+  min-height: 54px;
+  margin-top: 14px;
+  padding: 10px 42px 10px 13px;
+  position: relative;
+  align-content: center;
+  gap: 3px;
+  overflow: hidden;
+  border: 1px solid rgba(213, 179, 109, 0.3);
+  border-radius: 11px;
+  color: #d9d4c9;
+  background: rgba(213, 179, 109, 0.055);
+  text-decoration: none;
+  transition:
+    border-color 160ms ease,
+    background 160ms ease,
+    transform 160ms ease;
 }
 
-.answerExplanation small {
-  display: block;
-  margin-top: 10px;
-  overflow-wrap: anywhere;
-  color: #61646a;
-  font-size: 0.56rem;
-  line-height: 1.45;
+.sourceLink:hover,
+.sourceLink:focus-visible {
+  border-color: #d5b36d;
+  background: rgba(213, 179, 109, 0.11);
+  transform: translateY(-1px);
+  outline: none;
+}
+
+.sourceLink span {
+  color: #d5b36d;
+  font-size: 0.55rem;
+  font-weight: 800;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.sourceLink b {
+  overflow: hidden;
+  font-size: 0.66rem;
+  font-weight: 500;
+  line-height: 1.35;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sourceLink em {
+  position: absolute;
+  top: 50%;
+  right: 14px;
+  color: #d5b36d;
+  font-size: 1rem;
+  font-style: normal;
+  transform: translateY(-50%);
 }
 
 .nextButton {

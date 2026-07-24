@@ -2,32 +2,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
 import { copy } from "../../i18n/copy";
 import type { CharacterQuestion, Language } from "../../types/game";
-
-const categoryLabels: Record<string, { tr: string; en: string }> = {
-  life: { tr: "Yaşam", en: "Life" },
-  chronology: { tr: "Kronoloji", en: "Chronology" },
-  education: { tr: "Eğitim", en: "Education" },
-  career: { tr: "Kariyer", en: "Career" },
-  science: { tr: "Bilim", en: "Science" },
-  awards: { tr: "Ödüller", en: "Awards" },
-  misconceptions: { tr: "Yanlış bilinenler", en: "Misconceptions" },
-  history: { tr: "Tarih", en: "History" },
-  culture: { tr: "Kültür", en: "Culture" },
-  cosmology: { tr: "Kozmoloji", en: "Cosmology" },
-  works: { tr: "Eserler", en: "Works" },
-  politics: { tr: "Siyaset", en: "Politics" },
-  law: { tr: "Hukuk", en: "Law" },
-  media: { tr: "Medya", en: "Media" },
-  character: { tr: "Karakter", en: "Character" },
-  family: { tr: "Aile", en: "Family" },
-  "legal-history": { tr: "Hukuk tarihi", en: "Legal history" },
-  "legal-literacy": { tr: "Hukuk okuryazarlığı", en: "Legal literacy" },
-  historiography: { tr: "Tarih yazımı", en: "Historiography" },
-  government: { tr: "Yönetim", en: "Government" },
-  events: { tr: "Olaylar", en: "Events" },
-  institutions: { tr: "Kurumlar", en: "Institutions" },
-  technology: { tr: "Teknoloji", en: "Technology" },
-};
+import { parseSourceNote } from "../../utils/sourceLink";
 
 export function QuestionCard({
   question,
@@ -65,8 +40,7 @@ export function QuestionCard({
           (value, index) => value === question.correctAnswer[index],
         )
       : selectedAnswer === question.correctAnswer);
-  const category =
-    categoryLabels[question.category]?.[language] ?? question.category;
+  const source = parseSourceNote(question.sourceNote);
 
   const chooseOrderItem = (id: string) => {
     if (revealed || order.includes(id)) return;
@@ -97,18 +71,6 @@ export function QuestionCard({
           <p>
             {copy(language, "question")} {questionNumber}/{questionTotal}
           </p>
-          <div>
-            <span className={`toneBadge tone-${question.tone}`}>
-              {question.tone === "fact"
-                ? language === "tr"
-                  ? "Salt bilgi"
-                  : "Fact"
-                : language === "tr"
-                  ? "Kara mizah"
-                  : "Dark satire"}
-            </span>
-            <span>{category}</span>
-          </div>
         </div>
         <h2>{question.question[language]}</h2>
 
@@ -181,8 +143,18 @@ export function QuestionCard({
                 <span aria-hidden="true">{wasCorrect ? "✓" : "×"}</span>
                 {copy(language, wasCorrect ? "correct" : "wrong")}
               </strong>
-              <p>{question.explanation[language]}</p>
-              <small>{question.sourceNote}</small>
+              {source.url ? (
+                <a
+                  className="sourceLink"
+                  href={source.url}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <span>{language === "tr" ? "Kaynağı aç" : "Open source"}</span>
+                  <b>{source.label}</b>
+                  <em aria-hidden="true">↗</em>
+                </a>
+              ) : null}
               <button className="nextButton" type="button" onClick={onAdvance}>
                 {copy(language, roundFinished ? "seeResult" : "next")}
                 <span aria-hidden="true">→</span>
