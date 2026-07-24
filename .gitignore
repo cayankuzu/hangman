@@ -9,3 +9,5 @@ vite.config.js
 vite.config.d.ts
 final-verdict-*.png
 .DS_Store
+
+.vercel
