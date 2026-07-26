@@ -21,6 +21,7 @@ import type {
 import type { FinalSound } from "../../utils/sound";
 import { CharacterRig } from "../../three/CharacterRig";
 import { Gallows } from "../../three/Gallows";
+import { ImportedCharacterRig } from "../../three/ImportedCharacterRig";
 
 interface SceneCanvasProps {
   character: CharacterProfile;
@@ -546,6 +547,7 @@ export function SceneCanvas({
           gl.toneMapping = ACESFilmicToneMapping;
           gl.toneMappingExposure = 1.66;
           gl.outputColorSpace = SRGBColorSpace;
+          gl.localClippingEnabled = true;
         }}
         shadows="soft"
       >
@@ -602,14 +604,26 @@ export function SceneCanvas({
               lastCorrect={lastCorrect}
               animationEnabled={animationEnabled}
             />
-            <CharacterRig
-              character={character}
-              mode={mode}
-              step={correct}
-              feedbackNonce={feedbackNonce}
-              lastCorrect={lastCorrect}
-              animationEnabled={animationEnabled}
-            />
+            {character.id === "hitler" || character.id === "sheikh-said" ? (
+              <ImportedCharacterRig
+                character={character}
+                mode={mode}
+                step={correct}
+                feedbackNonce={feedbackNonce}
+                lastCorrect={lastCorrect}
+                animationEnabled={animationEnabled}
+                preview={preview}
+              />
+            ) : (
+              <CharacterRig
+                character={character}
+                mode={mode}
+                step={correct}
+                feedbackNonce={feedbackNonce}
+                lastCorrect={lastCorrect}
+                animationEnabled={animationEnabled}
+              />
+            )}
           </group>
           <SceneDetails character={character} />
           {finalState === "hanged" ? (

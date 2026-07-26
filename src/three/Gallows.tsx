@@ -18,9 +18,9 @@ const neckYByCharacter: Record<CharacterId, number> = {
   einstein: 0.72,
   epstein: 0.7,
   hawking: 0.66,
-  "sheikh-said": 0.64,
+  "sheikh-said": 1.18,
   cartman: 0.4,
-  hitler: 0.7,
+  hitler: 1.28,
 };
 
 const stagePalettes: Record<
@@ -133,8 +133,12 @@ export function Gallows({
   const lever = useRef<Group>(null);
   const feedback = useRef(0);
   const finalElapsed = useRef(0);
-  const neckY = neckYByCharacter[characterId];
+  const neckY =
+    neckYByCharacter[characterId] -
+    (mode === "execute" && step >= 6 && animationEnabled ? 0.14 : 0);
   const palette = stagePalettes[characterId];
+  const usesTrackedNoose =
+    characterId === "hitler" || characterId === "sheikh-said";
 
   useLayoutEffect(() => {
     ropeLoop.current?.scale.setScalar(mode === "execute" ? 1.02 : 0.92);
@@ -279,37 +283,39 @@ export function Gallows({
         </mesh>
       ))}
 
-      <group ref={rope}>
-        <group position={[0, 0, 0.5]}>
-          {[-0.018, 0, 0.018].map((x, index) => (
+      {!usesTrackedNoose ? (
+        <group ref={rope}>
+          <group position={[0, 0, 0.5]}>
+            {[-0.018, 0, 0.018].map((x, index) => (
+              <mesh
+                key={x}
+                position={[0.27 + x, cordCenter, 0]}
+                rotation={[0, 0, (index - 1) * 0.018]}
+                castShadow
+              >
+                <cylinderGeometry args={[0.017, 0.017, cordLength, 10]} />
+                <meshStandardMaterial
+                  color={index === 1 ? "#b99560" : "#88663d"}
+                  roughness={0.97}
+                />
+              </mesh>
+            ))}
+          </group>
+          <group ref={ropeLoop} position={[0, neckY, 0]}>
+            <NooseHalf front={false} radius={0.28} />
+            <NooseHalf front radius={0.28} />
             <mesh
-              key={x}
-              position={[0.27 + x, cordCenter, 0]}
-              rotation={[0, 0, (index - 1) * 0.018]}
+              ref={knot}
+              position={[0.255, 0.16, 0.86]}
+              rotation={[0, 0, 0.55]}
               castShadow
             >
-              <cylinderGeometry args={[0.017, 0.017, cordLength, 10]} />
-              <meshStandardMaterial
-                color={index === 1 ? "#b99560" : "#88663d"}
-                roughness={0.97}
-              />
+              <torusKnotGeometry args={[0.085, 0.018, 64, 9, 2, 3]} />
+              <meshStandardMaterial color="#8c6b42" roughness={0.96} />
             </mesh>
-          ))}
+          </group>
         </group>
-        <group ref={ropeLoop} position={[0, neckY, 0]}>
-          <NooseHalf front={false} radius={0.28} />
-          <NooseHalf front radius={0.28} />
-          <mesh
-            ref={knot}
-            position={[0.255, 0.16, 0.86]}
-            rotation={[0, 0, 0.55]}
-            castShadow
-          >
-            <torusKnotGeometry args={[0.085, 0.018, 64, 9, 2, 3]} />
-            <meshStandardMaterial color="#8c6b42" roughness={0.96} />
-          </mesh>
-        </group>
-      </group>
+      ) : null}
 
       <group ref={lever} position={[2.58, 1.72, 0.2]}>
         <mesh rotation={[0, 0, -0.28]}>
