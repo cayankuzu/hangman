@@ -145,8 +145,14 @@ const segments: readonly {
 function configureMaterial(
   source: Material,
   segment?: (typeof segments)[number],
+  ghost = false,
 ) {
   const material = source.clone();
+  if (ghost) {
+    material.transparent = true;
+    material.opacity = 0.1;
+    material.depthWrite = false;
+  }
   if (!segment) return material;
 
   material.onBeforeCompile = (shader) => {
@@ -164,7 +170,11 @@ function configureMaterial(
   return material;
 }
 
-function prepareModel(source: Group, segment?: (typeof segments)[number]) {
+function prepareModel(
+  source: Group,
+  segment?: (typeof segments)[number],
+  ghost = false,
+) {
   const model = cloneSkeleton(source) as Group;
   model.traverse((object: Object3D) => {
     const mesh = object as Mesh;
@@ -173,8 +183,10 @@ function prepareModel(source: Group, segment?: (typeof segments)[number]) {
     mesh.receiveShadow = true;
     mesh.frustumCulled = false;
     mesh.material = Array.isArray(mesh.material)
-      ? mesh.material.map((material) => configureMaterial(material, segment))
-      : configureMaterial(mesh.material, segment);
+      ? mesh.material.map((material) =>
+          configureMaterial(material, segment, ghost),
+        )
+      : configureMaterial(mesh.material, segment, ghost);
   });
   return model;
 }
@@ -184,6 +196,7 @@ function AnimatedModel({
   animations,
   segment,
   animation,
+  ghost = false,
   trackNeck = false,
   onNeckPosition,
 }: {
@@ -191,12 +204,13 @@ function AnimatedModel({
   animations: AnimationClip[];
   segment?: (typeof segments)[number];
   animation: ModelAnimation;
+  ghost?: boolean;
   trackNeck?: boolean;
   onNeckPosition?: (position: Vector3) => void;
 }) {
   const model = useMemo(
-    () => prepareModel(source, segment),
-    [segment, source],
+    () => prepareModel(source, segment, ghost),
+    [ghost, segment, source],
   );
   const mixer = useMemo(() => new AnimationMixer(model), [model]);
   const neckWorld = useMemo(() => new Vector3(), []);
@@ -473,6 +487,14 @@ export function ImportedCharacterRig({
         rotation={[0, profile.rotationY, 0]}
         scale={profile.scale}
       >
+        {!preview && !rescue && !strangulationActive && step < 6 ? (
+          <AnimatedModel
+            source={idleModel.scene}
+            animations={idleModel.animations}
+            animation="idle"
+            ghost
+          />
+        ) : null}
         {strangulationActive ? (
           <AnimatedModel
             source={strangulationModel.scene}

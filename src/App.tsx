@@ -228,6 +228,8 @@ function ModeSelect() {
   const setDifficulty = useGameStore((state) => state.setDifficulty);
   const setScreen = useGameStore((state) => state.setScreen);
   const character = getCharacter(characterId);
+  const hasImportedModel =
+    character.id === "hitler" || character.id === "sheikh-said";
   const [activePreview, setActivePreview] = useState<GameMode | null>(null);
 
   const modeCards: {
@@ -244,8 +246,26 @@ function ModeSelect() {
     <main className="screenShell modeShell">
       <AppHeader onBack={() => setScreen("characters")} />
       <section className="modeCharacter">
-        <div className="modePortrait" style={{ "--character-accent": character.accent } as React.CSSProperties}>
-          <img src={character.avatar} alt={character.name} />
+        <div
+          className={`modePortrait${hasImportedModel ? " modePortrait3d" : ""}`}
+          style={
+            { "--character-accent": character.accent } as React.CSSProperties
+          }
+        >
+          {hasImportedModel ? (
+            <Suspense fallback={<SceneFallback language={language} />}>
+              <SceneCanvas
+                character={character}
+                mode="rescue"
+                correct={6}
+                language={language}
+                preview
+                animationEnabled={false}
+              />
+            </Suspense>
+          ) : (
+            <img src={character.avatar} alt={character.name} />
+          )}
         </div>
         <p>{character.kind[language]}</p>
         <h1>{character.name}</h1>
