@@ -128,6 +128,7 @@ export function Gallows({
   const trapdoorLeft = useRef<Group>(null);
   const trapdoorRight = useRef<Group>(null);
   const rope = useRef<Group>(null);
+  const ropeCord = useRef<Group>(null);
   const ropeLoop = useRef<Group>(null);
   const knot = useRef<Mesh>(null);
   const lever = useRef<Group>(null);
@@ -136,6 +137,7 @@ export function Gallows({
   const neckY =
     neckYByCharacter[characterId] -
     (mode === "execute" && step >= 6 && animationEnabled ? 0.14 : 0);
+  const cordLength = 2.9 - neckY;
   const palette = stagePalettes[characterId];
   const usesTrackedNoose =
     characterId === "hitler" || characterId === "sheikh-said";
@@ -153,6 +155,10 @@ export function Gallows({
     finalElapsed.current =
       step >= 6 && animationEnabled ? finalElapsed.current + delta : 0;
     const finalReady = finalElapsed.current >= 0.9;
+    const executionDrop =
+      mode === "execute" && finalReady
+        ? MathUtils.smoothstep(finalElapsed.current, 0.9, 1.42) * 0.72
+        : 0;
 
     if (stage.current) {
       stage.current.position.x = MathUtils.damp(
@@ -164,16 +170,16 @@ export function Gallows({
     }
 
     if (trapdoorLeft.current && trapdoorRight.current) {
-      const target = mode === "execute" && finalReady ? 1.18 : 0;
+      const target = mode === "execute" && finalReady ? 1.32 : 0;
       trapdoorLeft.current.rotation.z = MathUtils.damp(
         trapdoorLeft.current.rotation.z,
-        target,
+        -target,
         5.4,
         delta,
       );
       trapdoorRight.current.rotation.z = MathUtils.damp(
         trapdoorRight.current.rotation.z,
-        -target,
+        target,
         5.4,
         delta,
       );
@@ -204,7 +210,16 @@ export function Gallows({
       ropeLoop.current.scale.set(next, next, next);
       ropeLoop.current.position.y = MathUtils.damp(
         ropeLoop.current.position.y,
-        neckY,
+        neckY - executionDrop,
+        4.8,
+        delta,
+      );
+    }
+
+    if (ropeCord.current) {
+      ropeCord.current.scale.y = MathUtils.damp(
+        ropeCord.current.scale.y,
+        (cordLength + executionDrop) / cordLength,
         4.8,
         delta,
       );
@@ -230,8 +245,6 @@ export function Gallows({
   });
 
   const wood = mode === "execute" ? palette.wood : palette.rescueWood;
-  const cordLength = 2.9 - neckY;
-  const cordCenter = neckY + cordLength / 2;
 
   return (
     <group ref={stage}>
@@ -241,9 +254,30 @@ export function Gallows({
       <RoundedBox args={[6.02, 0.5, 0.54]} radius={0.07} position={[0.02, 2.9, 0]} castShadow>
         <meshPhysicalMaterial color={wood} roughness={0.72} clearcoat={0.05} />
       </RoundedBox>
-      <RoundedBox args={[5.35, 0.36, 3.28]} radius={0.08} position={[0, -2.1, 0]} receiveShadow>
-        <meshPhysicalMaterial color="#201914" roughness={0.88} />
-      </RoundedBox>
+      {/* The platform is a structural frame, not a solid slab. The open centre
+          lets the character actually fall after the two trapdoors release. */}
+      {[-1.88, 1.88].map((x) => (
+        <RoundedBox
+          key={`side-${x}`}
+          args={[1.59, 0.36, 3.28]}
+          radius={0.08}
+          position={[x, -2.1, 0]}
+          receiveShadow
+        >
+          <meshPhysicalMaterial color="#201914" roughness={0.88} />
+        </RoundedBox>
+      ))}
+      {[-1.37, 1.37].map((z) => (
+        <RoundedBox
+          key={`edge-${z}`}
+          args={[2.18, 0.36, 0.55]}
+          radius={0.07}
+          position={[0, -2.1, z]}
+          receiveShadow
+        >
+          <meshPhysicalMaterial color="#201914" roughness={0.88} />
+        </RoundedBox>
+      ))}
 
       {[-2.3, 2.3].map((x) => (
         <StageRail key={x} x={x} />
@@ -285,11 +319,11 @@ export function Gallows({
 
       {!usesTrackedNoose ? (
         <group ref={rope}>
-          <group position={[0, 0, 0.5]}>
+          <group ref={ropeCord} position={[0, 2.9, 0.5]}>
             {[-0.018, 0, 0.018].map((x, index) => (
               <mesh
                 key={x}
-                position={[0.27 + x, cordCenter, 0]}
+                position={[0.27 + x, -cordLength / 2, 0]}
                 rotation={[0, 0, (index - 1) * 0.018]}
                 castShadow
               >

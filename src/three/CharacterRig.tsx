@@ -592,7 +592,10 @@ export function CharacterRig({
         ? Math.max(0.18, 1 - (finalElapsed.current - 0.9) / 4.8)
         : 0;
 
-    const finalDrop = mode === "execute" && finalReady ? -0.13 : 0;
+    const finalDrop =
+      mode === "execute" && finalReady
+        ? -MathUtils.smoothstep(finalElapsed.current, 0.9, 1.42) * 0.72
+        : 0;
     const chokingMotion =
       mode === "execute" && finalReady
         ? Math.sin(state.clock.elapsedTime * 12.5) *

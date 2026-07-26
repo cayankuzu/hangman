@@ -465,9 +465,12 @@ export function ImportedCharacterRig({
       strangulationActive && finalReady
         ? Math.sin(state.clock.elapsedTime * 1.7) * 0.065
         : 0;
+    const executeDrop = strangulationActive
+      ? MathUtils.smoothstep(finalElapsed.current, 0.9, 1.42) * 0.72
+      : 0;
     rig.current.position.y = MathUtils.damp(
       rig.current.position.y,
-      profile.position[1] + rescueJump + feedback.current * 0.04,
+      profile.position[1] - executeDrop + rescueJump + feedback.current * 0.04,
       5,
       delta,
     );

@@ -506,6 +506,33 @@ function SceneDirector({
   return null;
 }
 
+function StageFloor({ open }: { open: boolean }) {
+  const floor = useRef<Group>(null);
+
+  useFrame((_, delta) => {
+    if (!floor.current) return;
+    floor.current.position.y = MathUtils.damp(
+      floor.current.position.y,
+      open ? -4.65 : -2.32,
+      open ? 4.6 : 7,
+      delta,
+    );
+  });
+
+  return (
+    <group ref={floor} position={[0, -2.32, 0]}>
+      <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
+        <planeGeometry args={[18, 18]} />
+        <meshPhysicalMaterial
+          color="#20262d"
+          roughness={0.9}
+          metalness={0.08}
+        />
+      </mesh>
+    </group>
+  );
+}
+
 export function SceneCanvas({
   character,
   mode,
@@ -517,6 +544,8 @@ export function SceneCanvas({
   animationEnabled = true,
   finalState,
 }: SceneCanvasProps) {
+  const executionDrop =
+    mode === "execute" && correct >= 6 && animationEnabled && !preview;
   const feedbackClass =
     feedbackNonce > 0
       ? lastCorrect
@@ -591,10 +620,7 @@ export function SceneCanvas({
           distance={9}
         />
         <Suspense fallback={null}>
-          <mesh position={[0, -2.32, 0]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
-            <planeGeometry args={[18, 18]} />
-            <meshPhysicalMaterial color="#262c34" roughness={0.86} metalness={0.12} />
-          </mesh>
+          <StageFloor open={executionDrop} />
           <group position={[0, 0.15, 0]}>
             <Gallows
               mode={mode}
@@ -646,13 +672,15 @@ export function SceneCanvas({
               opacity={0.62}
             />
           ) : null}
-          <ContactShadows
-            position={[0, -2.27, 0]}
-            opacity={0.72}
-            scale={8}
-            blur={2.4}
-            far={5}
-          />
+          {!executionDrop ? (
+            <ContactShadows
+              position={[0, -2.27, 0]}
+              opacity={0.72}
+              scale={8}
+              blur={2.4}
+              far={5}
+            />
+          ) : null}
           <SceneDirector
             feedbackNonce={feedbackNonce}
             lastCorrect={lastCorrect}
