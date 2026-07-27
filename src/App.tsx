@@ -74,6 +74,20 @@ function AppHeader({ onBack }: { onBack?: () => void }) {
   );
 }
 
+function AppFooter() {
+  return (
+    <footer className="appFooter">
+      <small aria-label="Copyright © 2026 · MeMoDe tarafından">
+        <span>Copyright © 2026</span>
+        <span aria-hidden="true">·</span>
+        <span>
+          <strong>MeMoDe</strong> tarafından
+        </span>
+      </small>
+    </footer>
+  );
+}
+
 function MainMenu() {
   const language = useGameStore((state) => state.language);
   const setScreen = useGameStore((state) => state.setScreen);
@@ -626,23 +640,29 @@ export function App() {
 
   if (window.location.pathname === "/avatar-lab") {
     return (
-      <Suspense fallback={<SceneFallback language={language} />}>
-        <AvatarLab />
-      </Suspense>
+      <>
+        <Suspense fallback={<SceneFallback language={language} />}>
+          <AvatarLab />
+        </Suspense>
+        <AppFooter />
+      </>
     );
   }
 
   return (
-    <AnimatePresence mode="wait">
-      <motion.div
-        key={screen}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        transition={{ duration: 0.22 }}
-      >
-        <ActiveScreen />
-      </motion.div>
-    </AnimatePresence>
+    <>
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={screen}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.22 }}
+        >
+          <ActiveScreen />
+        </motion.div>
+      </AnimatePresence>
+      <AppFooter />
+    </>
   );
 }
