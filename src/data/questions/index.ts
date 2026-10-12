@@ -17,3 +17,12 @@ export const questionsByCharacter: Record<CharacterId, CharacterQuestion[]> = {
 };
 
 export const allQuestions = Object.values(questionsByCharacter).flat();
+
+export const sourceQuestionCount = [
+  einsteinQuestions,
+  epsteinQuestions,
+  hawkingQuestions,
+  sheikhSaidQuestions,
+  cartmanQuestions,
+  hitlerQuestions,
+].reduce((total, questions) => total + questions.length, 0);

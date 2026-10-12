@@ -24,7 +24,7 @@ test("language, difficulty and a 99-question round reach a result", async ({
   );
   await page.locator(".mode-execute").click();
   await expect(page.locator(".questionCard")).toBeVisible();
-  await expect(page.locator(".roundStatus")).toContainText("Zor");
+  await expect(page.locator(".gameHud")).toContainText("Zor");
 
   for (let turn = 0; turn < 40; turn += 1) {
     const result = page.locator(".resultPanel");

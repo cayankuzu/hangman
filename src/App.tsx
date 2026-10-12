@@ -2,17 +2,12 @@ import { AnimatePresence, motion } from "framer-motion";
 import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import { CharacterCard } from "./components/CharacterCard/CharacterCard";
 import { ClassicHangman } from "./components/ClassicHangman/ClassicHangman";
+import { GameHud } from "./components/GameHud/GameHud";
 import { LanguageToggle } from "./components/LanguageToggle/LanguageToggle";
-import {
-  MechanismTrack,
-} from "./components/ProgressTrack/ProgressTrack";
 import { QuestionCard } from "./components/QuestionCard/QuestionCard";
 import { characters, getCharacter } from "./data/characters";
-import {
-  getRoundCounts,
-  getRoundStats,
-  QUESTIONS_PER_ROUND,
-} from "./game/hangmanRules";
+import { sourceQuestionCount } from "./data/questions";
+import { getCurrentStreak, getRoundStats } from "./game/hangmanRules";
 import { copy } from "./i18n/copy";
 import { useGameStore } from "./stores/gameStore";
 import type { Difficulty, GameMode, Screen } from "./types/game";
@@ -360,11 +355,15 @@ function GameScreen() {
   const progress = useGameStore((state) => state.progress);
   const revealed = useGameStore((state) => state.revealed);
   const selectedAnswer = useGameStore((state) => state.selectedAnswer);
+  const jokersLeft = useGameStore((state) => state.jokersLeft);
+  const eliminated = useGameStore((state) => state.eliminated);
   const submitAnswer = useGameStore((state) => state.submitAnswer);
   const advance = useGameStore((state) => state.advance);
+  const playJoker = useGameStore((state) => state.playJoker);
   const setScreen = useGameStore((state) => state.setScreen);
   const character = getCharacter(characterId);
-  const counts = getRoundCounts(answers);
+  const stats = getRoundStats(answers);
+  const streak = getCurrentStreak(answers);
   const question = questions[questionIndex];
   const lastAnswer = answers[answers.length - 1]?.correct ?? null;
 
@@ -394,39 +393,24 @@ function GameScreen() {
   }
 
   const roundFinished = outcome !== null;
+  const danger = progress === 0 && !roundFinished;
 
   return (
-    <main className="gameShell">
+    <main className="gameShell stageGameShell">
       <AppHeader onBack={() => setScreen("mode")} />
-      <section className="gameTopline">
-        <div>
-          <p>{character.name}</p>
-          <strong>{copy(language, mode === "execute" ? "execute" : "rescue")}</strong>
-        </div>
-        <div className="roundStatus">
-          <span>
-            {copy(language, "question")} {questionIndex + 1}/{QUESTIONS_PER_ROUND}
-          </span>
-          <strong>{progress}/6</strong>
-          <small>
-            {copy(
-              language,
-              difficulty === 1 ? "easy" : difficulty === 2 ? "medium" : "hard",
-            )}
-          </small>
-        </div>
-        <div className="answerCounters">
-          <span>
-            {copy(language, "correctAnswers")} <b>{counts.correct}</b>
-          </span>
-          <span>
-            {copy(language, "wrongAnswers")} <b>{counts.wrong}</b>
-          </span>
-        </div>
-      </section>
+      <GameHud
+        character={character}
+        mode={mode}
+        difficulty={difficulty}
+        language={language}
+        progress={progress}
+        streak={streak}
+        accuracy={stats.accuracy}
+        answered={stats.total}
+      />
 
       <section className="gameLayout">
-        <div className="stageColumn">
+        <div className="stageColumn" data-danger={danger}>
           <Suspense fallback={<SceneFallback language={language} />}>
             <SceneCanvas
               character={character}
@@ -437,10 +421,16 @@ function GameScreen() {
               lastCorrect={lastAnswer}
             />
           </Suspense>
-          <div className="mechanismStatus">
-            <p>{copy(language, "mechanism")}</p>
-            <MechanismTrack value={progress} mode={mode} />
-          </div>
+          {lastAnswer && streak >= 2 ? (
+            <div
+              key={answers.length}
+              className={`streakBurst${streak >= 5 ? " isBlazing" : ""}`}
+              aria-hidden="true"
+            >
+              <small>{copy(language, "streakLabel")}</small>
+              <strong>×{streak}</strong>
+            </div>
+          ) : null}
         </div>
         <QuestionCard
           key={question.id}
@@ -449,14 +439,44 @@ function GameScreen() {
           revealed={revealed}
           selectedAnswer={selectedAnswer}
           questionNumber={questionIndex + 1}
-          questionTotal={QUESTIONS_PER_ROUND}
           roundFinished={roundFinished}
+          jokersLeft={jokersLeft}
+          eliminated={eliminated}
           onSubmit={submitAnswer}
           onAdvance={advance}
+          onJoker={playJoker}
         />
       </section>
     </main>
   );
+}
+
+const RECORDS_KEY = "asmaca-records-v1";
+
+function readRecords(): Record<string, number> {
+  try {
+    return JSON.parse(localStorage.getItem(RECORDS_KEY) ?? "{}") as Record<
+      string,
+      number
+    >;
+  } catch {
+    return {};
+  }
+}
+
+function readBestStreak(key: string) {
+  return readRecords()[key] ?? 0;
+}
+
+function writeBestStreak(key: string, streak: number) {
+  try {
+    const records = readRecords();
+    if (streak <= (records[key] ?? 0)) return;
+    records[key] = streak;
+    localStorage.setItem(RECORDS_KEY, JSON.stringify(records));
+  } catch {
+    // Depolama kapalıysa rekor yalnızca bu oturumda görünür.
+  }
 }
 
 function ResultScreen() {
@@ -474,6 +494,22 @@ function ResultScreen() {
   const character = getCharacter(characterId);
   const stats = getRoundStats(answers);
   const success = outcome === "won";
+  const recordKey = `${character.id}-${mode}-${difficulty}`;
+  const [previousBest] = useState(() => readBestStreak(recordKey));
+  const isRecord = stats.bestStreak > previousBest && stats.bestStreak >= 2;
+  const grade =
+    stats.total > 0 && stats.accuracy === 100
+      ? "gradePerfect"
+      : stats.accuracy >= 80
+        ? "gradeSharp"
+        : stats.accuracy >= 60
+          ? "gradeSteady"
+          : "gradeHard";
+
+  useEffect(() => {
+    if (!mode || mode === "classic") return;
+    writeBestStreak(recordKey, stats.bestStreak);
+  }, [mode, recordKey, stats.bestStreak]);
 
   useEffect(() => {
     if (!mode || mode === "classic" || !outcome) return;
@@ -516,15 +552,6 @@ function ResultScreen() {
             finalState={finalState}
           />
         </Suspense>
-        <motion.div
-          className={`resultSceneBadge ${success ? "isSuccess" : "isFailure"} mode-${mode}`}
-          initial={{ opacity: 0, scale: 0.86, y: 12 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          transition={{ delay: 1.05, duration: 0.42 }}
-        >
-          <small>{copy(language, mode === "execute" ? "execute" : "rescue")}</small>
-          <strong>{copy(language, resultKey)}</strong>
-        </motion.div>
       </section>
       <motion.section
         className={`resultPanel result-${finalState}`}
@@ -533,6 +560,16 @@ function ResultScreen() {
       >
         <p className="eyebrow">{copy(language, "result")}</p>
         <h1>{copy(language, resultKey)}</h1>
+        <div className="resultVerdict">
+          <span>{copy(language, grade)}</span>
+          {isRecord ? (
+            <span className="isRecord">{copy(language, "newRecord")}</span>
+          ) : previousBest > 0 ? (
+            <span>
+              {copy(language, "recordStreak")} · {previousBest}
+            </span>
+          ) : null}
+        </div>
         <div className="resultIdentity">
           <img src={character.avatar} alt="" />
           <div>
@@ -598,7 +635,7 @@ function AboutScreen() {
         <p>{copy(language, "aboutBody")}</p>
         <div className="aboutRules">
           <article>
-            <b>99</b>
+            <b>{sourceQuestionCount}</b>
             <span>{copy(language, "aboutRandom")}</span>
           </article>
           <article>

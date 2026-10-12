@@ -38,6 +38,19 @@ export function getRoundCounts(answers: readonly RoundAnswer[]) {
   return { correct, wrong };
 }
 
+export function getCurrentStreak(answers: readonly RoundAnswer[]) {
+  let streak = 0;
+  for (let index = answers.length - 1; index >= 0; index -= 1) {
+    if (!answers[index].correct) break;
+    streak += 1;
+  }
+  return streak;
+}
+
+export function jokersForDifficulty(difficulty: 1 | 2 | 3) {
+  return difficulty === 1 ? 2 : 1;
+}
+
 export function getRoundStats(answers: readonly RoundAnswer[]) {
   const { correct, wrong } = getRoundCounts(answers);
   let streak = 0;

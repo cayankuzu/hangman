@@ -2,9 +2,11 @@ import { describe, expect, it } from "vitest";
 import { questionsByCharacter } from "../data/questions";
 import { isAnswerCorrect } from "./answerEvaluator";
 import {
+  buildRoundQuestions,
   selectFreshQuestionCycle,
   selectQuestionCycle,
   shuffleQuestionOptions,
+  sourceIdOf,
 } from "./questionSelector";
 import {
   resolveMechanismAnswer,
@@ -109,6 +111,29 @@ describe("question data", () => {
     const second = selectFreshQuestionCycle(pool, 2, first, () => 0.42);
     expect(second).toHaveLength(99);
     expect(second[0].id).not.toBe(first[0].id);
+  });
+});
+
+describe("round builder", () => {
+  it("never repeats a question before every unique question is used", () => {
+    for (const pool of Object.values(questionsByCharacter)) {
+      const uniqueSources = new Set(pool.map(sourceIdOf)).size;
+      for (const difficulty of [1, 2, 3] as const) {
+        const round = buildRoundQuestions(pool, difficulty);
+        expect(round).toHaveLength(99);
+        const opening = round.slice(0, uniqueSources).map(sourceIdOf);
+        expect(new Set(opening).size).toBe(uniqueSources);
+        const firstOtherLevel = round.findIndex(
+          (question) => question.difficulty !== difficulty,
+        );
+        const sameLevelSources = new Set(
+          pool
+            .filter((question) => question.difficulty === difficulty)
+            .map(sourceIdOf),
+        ).size;
+        expect(firstOtherLevel).toBe(sameLevelSources);
+      }
+    }
   });
 });
 

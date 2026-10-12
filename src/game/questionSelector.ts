@@ -54,6 +54,54 @@ export function selectQuestionCycle(
   return ordered.map((question) => shuffleQuestionOptions(question, random));
 }
 
+export function sourceIdOf(question: CharacterQuestion) {
+  return question.id.replace(/-d[123]-(?:fact|satire)-v\d+$/, "");
+}
+
+/**
+ * Turu kurar: önce seçilen zorluğun tekil soruları, ardından komşu
+ * zorluklardan henüz sorulmamış tekil sorular, en son varyantlar gelir.
+ * Böylece aynı soru, havuzdaki tüm tekil sorular bitmeden tekrar etmez.
+ */
+export function buildRoundQuestions(
+  pool: readonly CharacterQuestion[],
+  difficulty: Difficulty,
+  previous: readonly CharacterQuestion[] = [],
+  random = Math.random,
+): CharacterQuestion[] {
+  const primary = selectFreshQuestionCycle(pool, difficulty, previous, random);
+  const seen = new Set<string>();
+  const unique: CharacterQuestion[] = [];
+  const repeats: CharacterQuestion[] = [];
+
+  for (const question of primary) {
+    const sourceId = sourceIdOf(question);
+    if (seen.has(sourceId)) {
+      repeats.push(question);
+    } else {
+      seen.add(sourceId);
+      unique.push(question);
+    }
+  }
+
+  const neighbours = ([1, 2, 3] as Difficulty[])
+    .filter((level) => level !== difficulty)
+    .sort(
+      (a, b) => Math.abs(a - difficulty) - Math.abs(b - difficulty) || b - a,
+    );
+
+  for (const level of neighbours) {
+    for (const question of selectQuestionCycle(pool, level, random)) {
+      const sourceId = sourceIdOf(question);
+      if (seen.has(sourceId)) continue;
+      seen.add(sourceId);
+      unique.push(question);
+    }
+  }
+
+  return [...unique, ...repeats].slice(0, primary.length);
+}
+
 function cycleSignature(questions: readonly CharacterQuestion[]) {
   return questions
     .slice(0, 12)

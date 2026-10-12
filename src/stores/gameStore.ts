@@ -1,8 +1,9 @@
 import { create } from "zustand";
 import { questionsByCharacter } from "../data/questions";
 import { isAnswerCorrect } from "../game/answerEvaluator";
-import { selectFreshQuestionCycle } from "../game/questionSelector";
+import { buildRoundQuestions, shuffle } from "../game/questionSelector";
 import {
+  jokersForDifficulty,
   resolveMechanismAnswer,
   resolveQuestionLimit,
 } from "../game/hangmanRules";
@@ -41,6 +42,8 @@ interface GameState {
   answers: RoundAnswer[];
   revealed: boolean;
   selectedAnswer: string | string[] | null;
+  jokersLeft: number;
+  eliminated: string[];
   setScreen: (screen: Screen) => void;
   setLanguage: (language: Language) => void;
   toggleSound: () => void;
@@ -49,6 +52,7 @@ interface GameState {
   startRound: (mode: GameMode) => void;
   submitAnswer: (answer: string | string[]) => void;
   advance: () => void;
+  playJoker: () => void;
   retry: () => void;
   reset: () => void;
 }
@@ -67,6 +71,8 @@ export const useGameStore = create<GameState>((set, get) => ({
   answers: [],
   revealed: false,
   selectedAnswer: null,
+  jokersLeft: 0,
+  eliminated: [],
 
   setScreen: (screen) => set({ screen }),
   setLanguage: (language) => {
@@ -86,7 +92,7 @@ export const useGameStore = create<GameState>((set, get) => ({
   startRound: (mode) => {
     const { characterId, difficulty, soundEnabled, questions } = get();
     if (!characterId) return;
-    const nextQuestions = selectFreshQuestionCycle(
+    const nextQuestions = buildRoundQuestions(
       questionsByCharacter[characterId],
       difficulty,
       questions,
@@ -101,6 +107,8 @@ export const useGameStore = create<GameState>((set, get) => ({
       answers: [],
       revealed: false,
       selectedAnswer: null,
+      jokersLeft: jokersForDifficulty(difficulty),
+      eliminated: [],
       screen: "game",
     });
   },
@@ -136,6 +144,7 @@ export const useGameStore = create<GameState>((set, get) => ({
   },
   advance: () => {
     const state = get();
+    if (!state.revealed) return;
     if (state.outcome) {
       playTone(state.soundEnabled, "mechanism");
       set({ screen: "result" });
@@ -149,6 +158,29 @@ export const useGameStore = create<GameState>((set, get) => ({
       ),
       revealed: false,
       selectedAnswer: null,
+      eliminated: [],
+    });
+  },
+  playJoker: () => {
+    const state = get();
+    const question = state.questions[state.questionIndex];
+    if (
+      !question ||
+      state.revealed ||
+      state.jokersLeft <= 0 ||
+      state.eliminated.length > 0 ||
+      question.type === "ordering" ||
+      question.options.length < 3
+    ) {
+      return;
+    }
+    const wrongIds = question.options
+      .map((option) => option.id)
+      .filter((id) => id !== question.correctAnswer);
+    playTone(state.soundEnabled, "panel");
+    set({
+      jokersLeft: state.jokersLeft - 1,
+      eliminated: shuffle(wrongIds).slice(0, question.options.length - 2),
     });
   },
   retry: () => {
@@ -167,5 +199,7 @@ export const useGameStore = create<GameState>((set, get) => ({
       answers: [],
       revealed: false,
       selectedAnswer: null,
+      jokersLeft: 0,
+      eliminated: [],
     }),
 }));
